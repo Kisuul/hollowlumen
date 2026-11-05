@@ -1,5 +1,7 @@
+import { starterCollection, normalizeCollection, editActiveCritter } from './critters.js';
 /** Pure, deterministic economy and save rules. UI and persistence live elsewhere. */
-export const SAVE_VERSION = 1;
+export const LEGACY_SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 export const MINUTE_MS = 60_000;
 export const OFFLINE_CAP_MS = 4 * 60 * MINUTE_MS;
 export const UPGRADE_REST_MS = 2 * MINUTE_MS; // Prototype cadence.
@@ -33,9 +35,9 @@ const uniqAllowed = (value, allowed) => Array.isArray(value)
   ? [...new Set(value.filter((item) => typeof item === 'string' && allowed.includes(item)))]
   : [];
 
-export function newGame(now = Date.now()) {
+function newLegacyGame(now = Date.now()) {
   return {
-    saveVersion: SAVE_VERSION,
+    saveVersion: LEGACY_SAVE_VERSION,
     name: 'Pip', color: 'rose', face: 'smile', accessory: 'scarf',
     yarn: 65, level: 1, lastClaimMs: now, nextUpgradeMs: 0,
     ownedColors: ['rose'], decor: ['rug'], battery: 82,
@@ -43,17 +45,17 @@ export function newGame(now = Date.now()) {
   };
 }
 
-/** Never allow untrusted, old or malformed persisted data into the live game. */
-export function sanitizeSave(input, now = Date.now()) {
-  const defaults = newGame(now);
-  if (!isObject(input) || input.saveVersion !== SAVE_VERSION) return defaults;
+/** The exact version-one sanitizer remains testable against locked synthetic fixtures. */
+export function sanitizeV1Save(input, now = Date.now()) {
+  const defaults = newLegacyGame(now);
+  if (!isObject(input) || input.saveVersion !== LEGACY_SAVE_VERSION) return defaults;
   const colorIds = COLORS.map((item) => item.id);
   const decorIds = DECOR.map((item) => item.id);
   const ownedColors = [...new Set(['rose', ...uniqAllowed(input.ownedColors, colorIds)])];
   const decor = uniqAllowed(input.decor, decorIds);
   const name = typeof input.name === 'string' ? input.name.trim().slice(0, 20) : defaults.name;
   return {
-    saveVersion: SAVE_VERSION,
+    saveVersion: LEGACY_SAVE_VERSION,
     name: name || defaults.name,
     color: ownedColors.includes(input.color) ? input.color : 'rose',
     face: ['smile', 'sleepy', 'bright'].includes(input.face) ? input.face : defaults.face,
@@ -68,6 +70,36 @@ export function sanitizeSave(input, now = Date.now()) {
     wanderCount: Math.floor(finite(input.wanderCount, 0, 0, 1_000_000)),
     visitCount: Math.floor(finite(input.visitCount, 0, 0, 1_000_000)),
   };
+}
+
+const ECONOMY_FIELDS = [
+  'yarn', 'level', 'lastClaimMs', 'nextUpgradeMs', 'ownedColors', 'decor',
+  'battery', 'gateOpen', 'wanderCount', 'visitCount',
+];
+const keepEconomy = (state) => Object.fromEntries(ECONOMY_FIELDS.map((key) => [key, state[key]]));
+
+export function newGame(now = Date.now()) {
+  return { saveVersion: SAVE_VERSION, ...keepEconomy(newLegacyGame(now)), ...starterCollection() };
+}
+
+/** A v1 Pip becomes exactly one named individual with a stable deterministic ID. */
+export function migrateV1Save(input, now = Date.now()) {
+  const legacy = sanitizeV1Save(input, now);
+  return { saveVersion: SAVE_VERSION, ...keepEconomy(legacy), ...starterCollection(legacy) };
+}
+
+/** Called only on Zustand envelope version mismatch; unknown versions must not be silently reset. */
+export function migratePersistedSave(input, fromVersion, now = Date.now()) {
+  if (fromVersion === LEGACY_SAVE_VERSION) return migrateV1Save(input, now);
+  throw new Error('Unsupported HollowLumen save version ' + fromVersion + '; refusing automatic migration');
+}
+
+/** Sanitizes canonical v2 state; old flat fields are NOT authoritative after migration. */
+export function sanitizeSave(input, now = Date.now()) {
+  if (!isObject(input) || input.saveVersion !== SAVE_VERSION) return newGame(now);
+  const economy = keepEconomy(sanitizeV1Save({ ...input, saveVersion: LEGACY_SAVE_VERSION }, now));
+  const collection = normalizeCollection(input, economy.ownedColors);
+  return { saveVersion: SAVE_VERSION, ...economy, ...collection };
 }
 
 export const upgradeCost = (level) => 36 * level;
@@ -106,12 +138,12 @@ export function purchaseDecor(game, id) {
 export function purchaseColor(game, id) {
   const item = COLORS.find((entry) => entry.id === id);
   if (!item || game.ownedColors.includes(id) || game.yarn < item.price) return game;
-  return {
+  const purchased = {
     ...game,
     yarn: game.yarn - item.price,
     ownedColors: [...game.ownedColors, id],
-    color: id,
   };
+  return editActiveCritter(purchased, { color: id });
 }
 
 export function upgradeIdle(game, now = Date.now()) {
