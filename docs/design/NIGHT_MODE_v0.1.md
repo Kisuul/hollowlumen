@@ -1,6 +1,6 @@
 # Lumenette Hollow — Moonlit Lavender: Night Palette & Day/Night System v0.1
 
-**Status:** Design/engineering proposal, pending nighttime visual and timing acceptance  
+**Status:** Nighttime palette choices approved (user-reported, 2026-11-05); solar behavior and rendered experience still proposed. Canonical spec: [Visual Design System v1.0](DESIGN_SYSTEM_v1.md).  
 **Companion to:** [Pastel Twilight Craft style guide](STYLE_GUIDE_v0.1.md)  
 **Date:** 2026-11-05  
 **Scope:** Design tokens, scene lighting, simulated astronomical cycle, accessibility and acceptance criteria. **This document does not implement the system.**
@@ -12,7 +12,7 @@
 **Night:** deep aubergine sky, cool moonlit paths, luminous yarn companions and inviting amber windows.  
 **Dawn:** slate-blue sky warming toward petals and pale lavender.
 
-The original designer approved the earlier **daylight visual reference**, as reported by the user. This night treatment is *new* and still speculative. All pastel accents retain the same character identity; the world should not become black, neon, gothic or illegibly dark.
+The original designer approved the earlier **daylight visual reference** and subsequently the **nighttime palette choices**, as reported by the user. Environmental and UI implementation details are still speculative. All pastel accents retain the same character identity; the world should not become black, neon, gothic or illegibly dark.
 
 **Two independent concerns:**
 1. **World lighting** tracks day/night/time/season.
@@ -24,19 +24,19 @@ Never darken all UI text and controls merely by applying an opacity filter to th
 
 | Token | Hex | Role |
 | --- | --- | --- |
-| \`night.canvas\` — Midnight Aubergine | \`#1B182A\` | Background and night sky foundation |
-| \`night.surface\` — Velvet Plum | \`#241F37\` | Cards and panels |
-| \`night.surfaceRaised\` — Dusk Heather | \`#30273F\` | Popovers, elevated surfaces |
-| \`night.text\` — Moonmilk | \`#F3ECFF\` | Main text |
-| \`night.textSecondary\` — Misty Mauve | \`#C8BDD9\` | Secondary text |
-| \`night.action\` — Moonlit Lilac | \`#D8C7FF\` | Primary button/background highlight |
-| \`night.actionText\` — Midnight Aubergine | \`#1B182A\` | Text/icons on light action |
-| \`night.magic\` — Lavender Bloom | \`#B79CFF\` | Lumenette glow, selected ornaments |
-| \`night.rose\` — Twilight Rose | \`#E9B6D7\` | Petals, customization accents |
-| \`night.lamp\` — Firefly Gold | \`#F6DFA5\` | Window, lantern and warm light |
-| \`night.skyAccent\` — Moonwater Blue | \`#A9C7E8\` | Moonlit sky and reflected light |
-| \`night.leaf\` — Moon Sage | \`#B8D5BE\` | Cool illuminated foliage |
-| \`night.border\` — Slate Lavender | \`#8276A1\` | Essential UI boundaries and focus contrast |
+| `night.canvas` — Midnight Aubergine | `#1B182A` | Background and night sky foundation |
+| `night.surface` — Velvet Plum | `#241F37` | Cards and panels |
+| `night.surfaceRaised` — Dusk Heather | `#30273F` | Popovers, elevated surfaces |
+| `night.text` — Moonmilk | `#F3ECFF` | Main text |
+| `night.textSecondary` — Misty Mauve | `#C8BDD9` | Secondary text |
+| `night.action` — Moonlit Lilac | `#D8C7FF` | Primary button/background highlight |
+| `night.actionText` — Midnight Aubergine | `#1B182A` | Text/icons on light action |
+| `night.magic` — Lavender Bloom | `#B79CFF` | Lumenette glow, selected ornaments |
+| `night.rose` — Twilight Rose | `#E9B6D7` | Petals, customization accents |
+| `night.lamp` — Firefly Gold | `#F6DFA5` | Window, lantern and warm light |
+| `night.skyAccent` — Moonwater Blue | `#A9C7E8` | Moonlit sky and reflected light |
+| `night.leaf` — Moon Sage | `#B8D5BE` | Cool illuminated foliage |
+| `night.border` — Slate Lavender | `#8276A1` | Essential UI boundaries and focus contrast |
 
 These are **semantic starting points**, not a mandate to make every light and shadow a flat color swatch.
 
@@ -46,13 +46,13 @@ Calculated with the WCAG relative luminance formula on **solid opaque colors**:
 
 | Combination | Ratio | Interpretation |
 | --- | --- | --- |
-| Moonmilk \`#F3ECFF\` / Midnight Aubergine \`#1B182A\` | **15.08:1** | Strong main text |
-| Misty Mauve \`#C8BDD9\` / Velvet Plum \`#241F37\` | **8.85:1** | Secondary text |
-| Midnight Aubergine \`#1B182A\` / Moonlit Lilac \`#D8C7FF\` | **11.18:1** | Main button |
-| Lavender Bloom \`#B79CFF\` / Velvet Plum \`#241F37\` | **6.95:1** | Accent text when appropriate |
-| Slate Lavender \`#8276A1\` / Velvet Plum \`#241F37\` | **3.81:1** | Visible essential UI stroke |
-| Firefly Gold \`#F6DFA5\` / Velvet Plum \`#241F37\` | **12.08:1** | Focus and lit glyphs |
-| Plum Jam \`#6F548F\` / Midnight Aubergine \`#1B182A\` | **2.76:1** | Too low as the sole essential control boundary |
+| Moonmilk `#F3ECFF` / Midnight Aubergine `#1B182A` | **15.08:1** | Strong main text |
+| Misty Mauve `#C8BDD9` / Velvet Plum `#241F37` | **8.85:1** | Secondary text |
+| Midnight Aubergine `#1B182A` / Moonlit Lilac `#D8C7FF` | **11.18:1** | Main button |
+| Lavender Bloom `#B79CFF` / Velvet Plum `#241F37` | **6.95:1** | Accent text when appropriate |
+| Slate Lavender `#8276A1` / Velvet Plum `#241F37` | **3.81:1** | Visible essential UI stroke |
+| Firefly Gold `#F6DFA5` / Velvet Plum `#241F37` | **12.08:1** | Focus and lit glyphs |
+| Plum Jam `#6F548F` / Midnight Aubergine `#1B182A` | **2.76:1** | Too low as the sole essential control boundary |
 
 For the implemented interface, check alpha blending, transitions, hover, disabled/selected states and overlapping backgrounds independently.
 
@@ -97,8 +97,8 @@ An illustrative approximation (not an ephemeris): at fictional 45°N, an Earth-l
 
 - Recompute the lighting state on app start, resume, relevant settings change and at a modest cadence (~once per minute for the clock); do not needlessly rerender all React components every frame.
 - For visual transitions, prefer CSS variables or efficient scene-specific SVG/CSS. Keep heavyweight shadows/blur under control on mobile.
-- Animated light, clouds and stars honor \`prefers-reduced-motion: reduce\`. Static time-of-day changes remain allowed, with no flashing or continuous movement required.
-- Changing UI appearance should not reset or corrupt local save data. Persist \`themePreference\` separately from \`worldTimeMode\`.
+- Animated light, clouds and stars honor `prefers-reduced-motion: reduce`. Static time-of-day changes remain allowed, with no flashing or continuous movement required.
+- Changing UI appearance should not reset or corrupt local save data. Persist `themePreference` separately from `worldTimeMode`.
 - On theme changes, preserve keyboard focus, screen-reader announcements where needed and visible control boundaries; text/UI contrast requirements are not relaxed at night.
 - Offer a "preview time of day" slider in the design review build so the original designer can inspect dawn/dusk/night without waiting for real time.
 - Night vision: don't put glowing windows or Lumenette bloom directly behind body copy.
@@ -115,7 +115,7 @@ An illustrative approximation (not an ephemeris): at fictional 45°N, an Earth-l
 
 ## 7. Boundaries and handoff
 
-**Now:** approve/adjust the proposed Moonlit Lavender palette and day/night feel.  
+**Now:** treat the palette choices as approved; the actual time-of-day simulation and rendered scenes need a separate prototype acceptance.  
 **Next:** implement a minimal theme-token layer and a deterministic pure solar-elevation/time-phase utility in a separate branch; wire the existing cottage lighting first.  
 **Later:** independently scope weather, lunar phases, cloud cover, real-location astronomy and native device widgets.
 

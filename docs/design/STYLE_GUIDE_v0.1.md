@@ -1,7 +1,7 @@
 # Lumenette Hollow — Mini Visual Style Guide v0.1
 
 **Working title:** Pastel Twilight Craft  
-**Status:** Approved daylight visual reference (user-reported, 2026-11-05); exact tokens and implementation remain subject to review  
+**Status:** Daytime palette and visual reference approved (user-reported, 2026-11-05). Canonical specification: [Visual Design System v1.0](DESIGN_SYSTEM_v1.md).  
 **Prepared:** 2026-11-05  
 **Scope:** Brand and UI direction for the web prototype and future mobile extensions. **No gameplay or CSS implementation is implied by this document.**
 
@@ -19,25 +19,25 @@
 4. **Relaxed, not demanding.** No urgent countdowns, aggressive offers, guilt-inducing copy, or flashing rewards.
 5. **Clear before cute.** Decoration must never obscure actions, status, navigation, or meaningful content.
 
-The companion [Moonlit Lavender night guide](NIGHT_MODE_v0.1.md) proposes dark-mode tokens and an Earth-like solar lighting cycle. The day visual reference was approved; the nighttime treatment remains a proposal.
+The companion [Moonlit Lavender night guide](NIGHT_MODE_v0.1.md) contains the approved night palette and an *unimplemented* proposed solar cycle. Both palettes were approved; [Visual Design System v1.0](DESIGN_SYSTEM_v1.md) is the canonical design specification.
 
 ## 2. Palette and color roles
 
 | Token name | Hex | Intended use |
 | --- | --- | --- |
-| Lavender Bloom | \`#B79CFF\` | Signature accent, selection highlights, decorative glow |
-| Lilac Mist | \`#D8C7FF\` | Soft panels, selected backgrounds, dusk skies |
-| Plum Jam | \`#6F548F\` | Solid primary actions, interactive outlines, headers on light surfaces |
-| Warm Cream | \`#F9F1E7\` | Cottage interiors, secondary cards, warm surfaces |
-| Petal Pink | \`#F7D6E8\` | Flowers, accessories, delight accents |
-| Moss Milk | \`#D8E8D8\` | Gardens, growing, peaceful progress |
-| Powder Blue | \`#D7E7F6\` | Valleys, moonlight, magical items |
-| Apricot Puff | \`#F6DFC9\` | Warm light, wood, subtle encouragement |
-| Moonmilk | \`#FCF8FF\` | Main application canvas |
-| Soft Linen | \`#F3ECF7\` | Recessed areas and alternating surfaces |
-| Mulberry Ink | \`#4C3E57\` | Ordinary text on pale surfaces |
-| Midnight Thread | \`#3B2E44\` | Text over Lavender Bloom; high-contrast icons and focus |
-| Dusty Mauve | \`#B8A9BC\` | **Decorative** separators only, not essential control boundaries |
+| Lavender Bloom | `#B79CFF` | Signature accent, selection highlights, decorative glow |
+| Lilac Mist | `#D8C7FF` | Soft panels, selected backgrounds, dusk skies |
+| Plum Jam | `#6F548F` | Solid primary actions, interactive outlines, headers on light surfaces |
+| Warm Cream | `#F9F1E7` | Cottage interiors, secondary cards, warm surfaces |
+| Petal Pink | `#F7D6E8` | Flowers, accessories, delight accents |
+| Moss Milk | `#D8E8D8` | Gardens, growing, peaceful progress |
+| Powder Blue | `#D7E7F6` | Valleys, moonlight, magical items |
+| Apricot Puff | `#F6DFC9` | Warm light, wood, subtle encouragement |
+| Moonmilk | `#FCF8FF` | Main application canvas |
+| Soft Linen | `#F3ECF7` | Recessed areas and alternating surfaces |
+| Mulberry Ink | `#4C3E57` | Ordinary text on pale surfaces |
+| Midnight Thread | `#3B2E44` | Text over Lavender Bloom; high-contrast icons and focus |
+| Dusty Mauve | `#B8A9BC` | **Decorative** separators only, not essential control boundaries |
 
 **Semantic color rules**
 
@@ -54,12 +54,12 @@ Ratios below use WCAG relative-luminance calculations for **opaque, solid** swat
 
 | Text / foreground | Background | Contrast | Use |
 | --- | --- | --- | --- |
-| Mulberry Ink \`#4C3E57\` | Moonmilk \`#FCF8FF\` | 9.38:1 | Body text — passes AA normal text |
-| Mulberry Ink \`#4C3E57\` | Warm Cream \`#F9F1E7\` | 8.79:1 | Body text — passes AA normal text |
-| Midnight Thread \`#3B2E44\` | Lavender Bloom \`#B79CFF\` | 5.55:1 | Text on lavender — passes AA normal text |
-| White \`#FFFFFF\` | Plum Jam \`#6F548F\` | 6.29:1 | Primary buttons — passes AA normal text |
-| White \`#FFFFFF\` | Lavender Bloom \`#B79CFF\` | 2.28:1 | **Do not use for normal button text** |
-| Mulberry Ink \`#4C3E57\` | Lavender Bloom \`#B79CFF\` | 4.32:1 | **Not sufficient for AA normal text** |
+| Mulberry Ink `#4C3E57` | Moonmilk `#FCF8FF` | 9.38:1 | Body text — passes AA normal text |
+| Mulberry Ink `#4C3E57` | Warm Cream `#F9F1E7` | 8.79:1 | Body text — passes AA normal text |
+| Midnight Thread `#3B2E44` | Lavender Bloom `#B79CFF` | 5.55:1 | Text on lavender — passes AA normal text |
+| White `#FFFFFF` | Plum Jam `#6F548F` | 6.29:1 | Primary buttons — passes AA normal text |
+| White `#FFFFFF` | Lavender Bloom `#B79CFF` | 2.28:1 | **Do not use for normal button text** |
+| Mulberry Ink `#4C3E57` | Lavender Bloom `#B79CFF` | 4.32:1 | **Not sufficient for AA normal text** |
 
 ## 3. Type and spacing
 
@@ -103,7 +103,7 @@ Ratios below use WCAG relative-luminance calculations for **opaque, solid** swat
 - Microinteractions: roughly 140–240 ms, ease-out, minimal travel.
 - Pip may gently breathe or bob over ~3–5 seconds; this is atmospheric, not a signal to tap.
 - Rewards appear as a small puff of thread or a gentle rise/fade; do not interrupt control.
-- Honor \`prefers-reduced-motion: reduce\` by stopping continuous animation and replacing transitions with immediate feedback.
+- Honor `prefers-reduced-motion: reduce` by stopping continuous animation and replacing transitions with immediate feedback.
 - Never convey rarity, success, or error **only** through color, sound, or animation.
 
 **Microcopy samples**
@@ -130,11 +130,11 @@ Design review checklist:
 ## 8. Proposed implementation sequence
 
 1. **Approve this guide** (or annotate revisions) before changing gameplay screens.
-2. Map semantic design tokens into \`src/styles.css\` without changing economy logic.
+2. Map semantic design tokens into `src/styles.css` without changing economy logic.
 3. Reskin **Home** and **Pip** first as a representative vertical slice; evaluate on phone and desktop.
 4. Apply patterns to the other four screens; run contrast, keyboard, reduced-motion, and regression checks.
 5. Only then evaluate new art, native widget treatments, or seasonal palette extensions.
 
-**This guide is not evidence that styling, QA, or the complete product vision is implemented.**
+**This guide is not evidence that styling, QA, or the complete product vision is implemented.** Use the [implementation acceptance checklist](IMPLEMENTATION_ACCEPTANCE.md).
 
-**Source context:** \`README.md\`, \`docs/PROTOTYPE.md\`, and \`src/styles.css\` at HollowLumen main \`4e2ade8a019f45bc39a6ea0d17b949eb4ced97b9\`; user reported that the first gameplay version worked as expected and provisionally signed off stage one on 2026-11-05.
+**Source context:** `README.md`, `docs/PROTOTYPE.md`, and `src/styles.css` at HollowLumen main `4e2ade8a019f45bc39a6ea0d17b949eb4ced97b9`; user reported that the first gameplay version worked as expected and provisionally signed off stage one on 2026-11-05.
