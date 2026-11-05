@@ -84,7 +84,19 @@ try{
     return { background:style.backgroundColor, color:style.color,
       tokenBackground:getComputedStyle(document.documentElement).getPropertyValue('--hl-secondary-bg').trim() };
   });
-  console.log('Secondary button/night '+viewport.width+'px: '+JSON.stringify(nightButton));
+  const luminance = (css) => {
+    const channels = css.match(/\d+(?:\.\d+)?/g)?.slice(0,3).map(Number);
+    assert.equal(channels?.length,3,'Expected an RGB color: '+css);
+    const [r,g,b]=channels.map(channel=>{
+      const value=channel/255;
+      return value<=.04045?value/12.92:((value+.055)/1.055)**2.4;
+    });
+    return .2126*r+.7152*g+.0722*b;
+  };
+  const light=luminance(nightButton.color),dark=luminance(nightButton.background);
+  const contrast=(Math.max(light,dark)+.05)/(Math.min(light,dark)+.05);
+  assert.ok(contrast>=4.5,'Night secondary button has insufficient text contrast: '+contrast.toFixed(2)+':1');
+  console.log('Secondary button/night '+viewport.width+'px: '+JSON.stringify({...nightButton,contrast:contrast.toFixed(2)}));
   if(viewport.width !== 320)await page.screenshot({path:'artifacts/visual/hollow-night-'+viewport.width+'.png',fullPage:true});
   await page.getByRole('button',{name:'Return to live'}).click();
   assert.equal(await page.locator('.time-preview output').innerText(),'Live clock');
