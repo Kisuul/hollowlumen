@@ -114,7 +114,8 @@ button:disabled { opacity:.65; }
   border-radius:var(--hl-radius-button);
   min-height:44px;
   font-size:13px;
-  transition:transform .18s ease-out,background-color .18s ease-out,box-shadow .18s ease-out;
+  /* Keep background and text synchronized on theme changes; no low-contrast tween. */
+  transition:transform .18s ease-out,box-shadow .18s ease-out;
 }
 .button.primary, .button.primary:not(:disabled):hover {
   background:var(--hl-action-bg);
