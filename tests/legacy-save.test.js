@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { newGame, sanitizeSave, idleEarnings, claimIdle, SAVE_VERSION, MAX_LEVEL } from '../src/state/game.js';
+import { sanitizeV1Save, migrateV1Save, migratePersistedSave, idleEarnings, claimIdle, LEGACY_SAVE_VERSION, SAVE_VERSION, MAX_LEVEL } from '../src/state/game.js';
 
 const NOW = 1_800_000_000_000; // Explicit deterministic clock, later than fixture timestamps.
 const readFixture = (name) => JSON.parse(readFileSync(new URL('./fixtures/' + name, import.meta.url), 'utf8'));
@@ -9,9 +9,9 @@ const readFixture = (name) => JSON.parse(readFileSync(new URL('./fixtures/' + na
 test('synthetic v1 local-storage envelope retains all canonical Pip fields', () => {
   const persisted = readFixture('v1-pip-customized.json');
   assert.equal(persisted.version, 1, 'Zustand persist envelope version must be explicit');
-  assert.equal(persisted.state.saveVersion, SAVE_VERSION, 'Domain state version is independent of envelope');
-  assert.deepEqual(Object.keys(persisted.state).sort(), Object.keys(newGame(NOW)).sort());
-  const loaded = sanitizeSave(persisted.state, NOW);
+  assert.equal(persisted.state.saveVersion, LEGACY_SAVE_VERSION, 'Domain state version is independent of envelope');
+  assert.deepEqual(Object.keys(persisted.state).sort(), Object.keys(sanitizeV1Save(persisted.state, NOW)).sort());
+  const loaded = sanitizeV1Save(persisted.state, NOW);
   assert.deepEqual(loaded, persisted.state);
   assert.equal(loaded.name, 'Pip the First');
   assert.equal(loaded.yarn, 157);
@@ -26,7 +26,7 @@ test('synthetic v1 local-storage envelope retains all canonical Pip fields', () 
 });
 
 test('legacy idle economics still use the persisted claim timestamp, not scene time', () => {
-  const game = sanitizeSave(readFixture('v1-pip-customized.json').state, NOW);
+  const game = sanitizeV1Save(readFixture('v1-pip-customized.json').state, NOW);
   const expected = idleEarnings(game, NOW);
   assert.equal(expected.minutes, 240, 'Offline cap still applies to old saves');
   const result = claimIdle(game, NOW);
@@ -39,7 +39,7 @@ test('legacy idle economics still use the persisted claim timestamp, not scene t
 test('hostile v1 fixture is sanitized without introducing untrusted identities', () => {
   const persisted = readFixture('v1-malformed.json');
   assert.equal(persisted.version, 1);
-  const sanitized = sanitizeSave(persisted.state, NOW);
+  const sanitized = sanitizeV1Save(persisted.state, NOW);
   assert.equal(sanitized.saveVersion, 1);
   assert.equal(sanitized.name, 'Pip');
   assert.equal(sanitized.color, 'rose');

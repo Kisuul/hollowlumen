@@ -350,3 +350,25 @@ button:disabled { opacity:.65; }
   .scene-companion { animation:none !important; }
   .scene-sun,.scene-stars,.house-window { transition:none !important; }
 }
+
+/* Checkpoint 2: compact individually identified household; tokens adapt to both palettes. */
+.critter-collection { margin-bottom:22px; color:var(--hl-text-primary); }
+.critter-collection-head { display:flex; flex-wrap:wrap; align-items:start; justify-content:space-between; gap:10px; }
+.critter-collection-head h2 { font-size:21px; margin:8px 0; color:var(--hl-text-primary); }
+.critter-collection-head p { color:var(--hl-text-secondary); margin:0 0 15px; line-height:1.5; }
+.critter-count { color:var(--hl-text-secondary); font-size:12px; font-weight:700; }
+.critter-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-bottom:16px; }
+.critter-card { display:flex; flex-wrap:wrap; align-items:center; gap:10px; min-width:0; border:1px solid var(--hl-outline); background:var(--hl-surface-raised); border-radius:16px; padding:12px; }
+.critter-card .lumenette { width:70px; height:70px; flex:0 0 auto; }
+.critter-info { display:flex; flex:1 1 80px; flex-direction:column; gap:5px; min-width:0; }
+.critter-info strong { overflow-wrap:anywhere; color:var(--hl-text-primary); }
+.critter-info span { font-size:12px; color:var(--hl-text-secondary); }
+.critter-actions { display:flex; flex-wrap:wrap; gap:8px; width:100%; }
+.critter-actions .button { min-height:44px; padding:8px 12px; font-size:12px; }
+.critter-actions [aria-pressed="true"] { outline:2px solid var(--hl-focus); outline-offset:1px; }
+.critter-collection > .button { min-height:44px; }
+.critter-collection .muted { color:var(--hl-text-secondary); margin:12px 0 0; }
+@media(max-width:520px) {
+  .critter-grid { grid-template-columns:minmax(0,1fr); }
+  .critter-card .lumenette { width:64px; height:64px; }
+}

@@ -218,7 +218,30 @@ export function Wander() {
 export function Yarn() {
   const game = useGame();
   const [draftName, setDraftName] = useState(game.name);
+  useEffect(() => setDraftName(game.name), [game.activeCritterId, game.name]);
   return <div className="content-wrap"><Heading kicker="MAKE THEM YOUR OWN" title={<>A friend made of <em>yarn.</em></>} description="Every stitch tells a little story. Give your companion a look that feels like home." />
+    <section className="panel critter-collection" aria-label="Your Lumenettes">
+      <div className="critter-collection-head">
+        <div><span className="eyebrow">A SMALL HOUSEHOLD</span><h2>Your Lumenettes</h2><p>Each little friend has their own name and look. Pick one to customize, and choose a favorite.</p></div>
+        <span className="critter-count">{game.critters.length} / 2 in this preview</span>
+      </div>
+      <div className="critter-grid">
+        {game.critters.map((critter) => <article className="critter-card" key={critter.id}>
+          <Lumenette name={critter.name} color={critter.appearance.color} face={critter.appearance.face} accessory={critter.appearance.accessory}/>
+          <div className="critter-info"><strong>{critter.name}</strong><span>{critter.id === game.favoriteCritterId ? '★ Favorite' : '✧ Cottage resident'}</span></div>
+          <div className="critter-actions">
+            <button type="button" className="button secondary" aria-pressed={game.activeCritterId === critter.id}
+              onClick={() => game.selectCritter(critter.id)}>{game.activeCritterId === critter.id ? 'Customizing ✓' : 'Customize'}</button>
+            <button type="button" className="button secondary" aria-label={`Favorite ${critter.name}`}
+              aria-pressed={game.favoriteCritterId === critter.id}
+              onClick={() => game.setFavoriteCritter(critter.id)}>{game.favoriteCritterId === critter.id ? '★ Favorite' : '☆ Favorite'}</button>
+          </div>
+        </article>)}
+      </div>
+      <button type="button" className="button primary" disabled={game.critters.length >= 2}
+        onClick={game.createCritter}>{game.critters.length >= 2 ? 'Two friends ready ✿' : 'Make another Lumenette ✿'}</button>
+      <p className="muted tiny">Checkpoint 2 collection preview: one authored pattern; no construction abilities or resident AI yet.</p>
+    </section>
     <div className="custom-grid"><section className="panel preview-card"><span className="eyebrow">YOUR COMPANION</span><div className="preview-orbit"><Lumenette name={game.name} color={game.color} face={game.face} accessory={game.accessory}/></div><h2>{game.name} <span>✿</span></h2><p>Your ever-present little yarn friend.</p></section>
     <section className="panel custom-controls"><div className="input-row"><label htmlFor="companion-name" className="field-title">Companion's name</label><div className="name-row"><input id="companion-name" type="text" maxLength="20" value={draftName} onChange={(event) => setDraftName(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') game.setName(draftName); }}/><button type="button" className="button secondary" onClick={() => game.setName(draftName)}>Save</button></div></div>
     <fieldset><legend className="field-title">Pick a yarn color</legend><div className="swatches">{COLORS.map((color) => <button type="button" key={color.id} className={`swatch ${game.color === color.id ? 'selected' : ''}`} style={{ '--swatch': color.hex }} disabled={!game.ownedColors.includes(color.id)} aria-label={`${color.label}${!game.ownedColors.includes(color.id) ? ', locked' : ''}`} aria-pressed={game.color === color.id} title={color.label} onClick={() => game.setColor(color.id)}><span aria-hidden="true">{!game.ownedColors.includes(color.id) ? '🔒' : game.color === color.id ? '✓' : ''}</span></button>)}</div><Link to="/shop" className="text-link tiny">Find more colors in the shop ↗</Link></fieldset>
