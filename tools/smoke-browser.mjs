@@ -4,7 +4,7 @@ import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 import assert from 'node:assert/strict';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 const host='http://127.0.0.1:4173';
 const server=spawn(process.execPath,['node_modules/vite/bin/vite.js','preview','--host','127.0.0.1','--port','4173','--strictPort'],{stdio:'pipe'});
 let browser;const errors=[];
@@ -114,6 +114,35 @@ try{
   console.log('PASS '+viewport.width+'px: 5 routes, navigation, game state persistence, layout');
   await page.close();
  }
+ // Checkpoint 0: boot the actual browser from a *synthetic* version-one
+ // Zustand envelope, then assert hydration and round-trip preservation.
+ const legacyEnvelope=JSON.parse(readFileSync(
+   new URL('../tests/fixtures/v1-pip-customized.json',import.meta.url),'utf8'));
+ const legacyPage=await browser.newPage({viewport:{width:390,height:844}});
+ legacyPage.on('pageerror',err=>errors.push('legacy: pageerror '+err.message));
+ await legacyPage.addInitScript(({envelope})=>{
+   const key='lumenette-hollow-save';
+   if(localStorage.getItem(key)===null)localStorage.setItem(key,JSON.stringify(envelope));
+ },{envelope:legacyEnvelope});
+ await legacyPage.goto(host,{waitUntil:'networkidle'});
+ await legacyPage.getByRole('navigation',{name:'Mobile navigation'})
+   .getByRole('link',{name:'Yarn'}).click();
+ await legacyPage.waitForFunction(()=>document.querySelector('.preview-card h2')?.textContent?.includes('Pip the First'),
+   null,{timeout:4000});
+ const afterHydration=await legacyPage.evaluate(
+   ()=>JSON.parse(localStorage.getItem('lumenette-hollow-save')));
+ for(const field of ['name','color','face','accessory','yarn','level','ownedColors','decor','battery','lastClaimMs','nextUpgradeMs','wanderCount','visitCount','gateOpen']){
+   assert.deepEqual(afterHydration.state[field],legacyEnvelope.state[field],
+     'v1 browser hydrate altered field '+field);
+ }
+ assert.equal(afterHydration.version,1,'Zustand persist envelope version changed unexpectedly');
+ await legacyPage.reload({waitUntil:'networkidle'});
+ assert.ok((await legacyPage.locator('.preview-card h2').innerText()).includes('Pip the First'));
+ const afterReload=await legacyPage.evaluate(
+   ()=>JSON.parse(localStorage.getItem('lumenette-hollow-save')));
+ assert.deepEqual(afterReload.state,afterHydration.state,'v1 persisted game state changed across reload');
+ await legacyPage.close();
+ console.log('PASS: browser hydrated and round-tripped synthetic version-one save without state loss');
  if(errors.length)throw Error(errors.join('\n'));
  console.log('PASS: no JS page or console errors');
 }finally{await browser?.close();server.kill();}
