@@ -1,7 +1,7 @@
 # Lumenette Hollow — Mini Visual Style Guide v0.1
 
 **Working title:** Pastel Twilight Craft  
-**Status:** Design proposal; pending original designer approval  
+**Status:** Approved daylight visual reference (user-reported, 2026-11-05); exact tokens and implementation remain subject to review  
 **Prepared:** 2026-11-05  
 **Scope:** Brand and UI direction for the web prototype and future mobile extensions. **No gameplay or CSS implementation is implied by this document.**
 
@@ -18,6 +18,8 @@
 3. **Gentle, not infantilizing.** Rounded and charming without sacrificing readability or clarity.
 4. **Relaxed, not demanding.** No urgent countdowns, aggressive offers, guilt-inducing copy, or flashing rewards.
 5. **Clear before cute.** Decoration must never obscure actions, status, navigation, or meaningful content.
+
+The companion [Moonlit Lavender night guide](NIGHT_MODE_v0.1.md) proposes dark-mode tokens and an Earth-like solar lighting cycle. The day visual reference was approved; the nighttime treatment remains a proposal.
 
 ## 2. Palette and color roles
 
@@ -116,7 +118,7 @@ Target **WCAG 2.2 Level AA** for the interface. The basic requirements used in t
 
 Design review checklist:
 
-- [ ] Original designer approves mood, hues, typography, and character expression.
+- [x] Original designer approves the daylight visual reference (user-reported; precise tokens, typography and implementation still require review).
 - [ ] Home, Wander, Idle, Yarn, and Shop share a coherent purple identity without uniform monochrome.
 - [ ] Core text and controls pass checked contrast **in actual rendered states**.
 - [ ] At 320px viewport and at 200% zoom, essential actions remain visible and usable.
