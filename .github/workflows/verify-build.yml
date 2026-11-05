@@ -45,6 +45,14 @@ jobs:
       - name: Build production bundle
         run: npm run build
 
+      - name: Upload compiled site for browser smoke testing
+        if: ${{ success() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # pinned v4
+        with:
+          name: compiled-site
+          path: dist/
+          retention-days: 7
+
       - name: Upload resolved lockfile for review
         if: ${{ always() && hashFiles('package-lock.json') != '' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # pinned v4
