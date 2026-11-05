@@ -110,6 +110,18 @@ try{
     assert.equal(bg,'rgb(27, 24, 42)','Dark palette missing on '+label);
     assert.equal(await page.locator('body').evaluate(el=>el.scrollWidth>window.innerWidth+2),false,'Dark overflow on '+label);
   }
+  // Visual and interaction evidence for the new two-companion collection at both themes.
+  await nav.getByRole('link',{name:'Yarn'}).click();
+  await page.getByRole('button',{name:/Make another Lumenette/}).click();
+  assert.equal(await page.locator('.critter-card').count(),2,
+    'Collection must display two separately owned individuals on '+viewport.width+'px');
+  assert.equal(await page.locator('body').evaluate(el=>el.scrollWidth>window.innerWidth+2),false,
+    'New collection overflows at '+viewport.width+'px');
+  if(viewport.width !== 320){
+    await page.screenshot({path:'artifacts/visual/collection-night-'+viewport.width+'.png',fullPage:true});
+    await interfacePicker.selectOption('light');
+    await page.screenshot({path:'artifacts/visual/collection-day-'+viewport.width+'.png',fullPage:true});
+  }
   console.log('PASS '+viewport.width+'px: palette switching, 24-hour preview, persistence, 5 dark routes');
   console.log('PASS '+viewport.width+'px: 5 routes, navigation, game state persistence, layout');
   await page.close();
