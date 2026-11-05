@@ -53,6 +53,14 @@ jobs:
       - name: Exercise compiled site in Chromium
         run: node tools/smoke-browser.mjs
 
+      - name: Upload palette preview screenshots
+        if: ${{ always() && hashFiles('artifacts/visual/*.png') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # pinned v4
+        with:
+          name: palette-preview-screenshots
+          path: artifacts/visual/
+          retention-days: 7
+
       - name: Upload compiled site for browser smoke testing
         if: ${{ success() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # pinned v4

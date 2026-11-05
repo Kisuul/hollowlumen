@@ -1,0 +1,352 @@
+/* HollowLumen Stage 2: semantic design palette overrides.
+ * Source of exact colors: docs/design/tokens/visual.tokens.json.
+ * Imported AFTER src/styles.css. Do not modify the game economy here. */
+:root,
+:root[data-ui-theme="day"] {
+  --hl-side: var(--hl-surface-raised);
+  --hl-soft: var(--hl-selection-bg);
+  --hl-warm: #fffafa;
+  --hl-quiet: var(--hl-text-secondary);
+  --hl-shadow: #4c3e5726;
+  --hl-divider: #b8a9bc7a;
+  --hl-illustration-surface: #f3e9f9;
+  --hl-illustration-tint: #f7d6e8;
+  --hl-garden: #b8ceba;
+  --hl-garden-dark: #9fb99f;
+  --hl-cottage-wall: #e9d8cf;
+  --hl-cottage-roof: #9d78ac;
+  --hl-cottage-door: #796080;
+  --hl-window: #f6dfa5;
+  --hl-cottage-path: #efd7d4;
+}
+:root[data-ui-theme="night"] {
+  --hl-side: #211b33;
+  --hl-soft: #423651;
+  --hl-warm: #2d253f;
+  --hl-quiet: #c8bdd9;
+  --hl-shadow: #08071270;
+  --hl-divider: #8276a17a;
+  --hl-illustration-surface: #38304b;
+  --hl-illustration-tint: #524267;
+  --hl-garden: #485d60;
+  --hl-garden-dark: #314954;
+  --hl-cottage-wall: #827086;
+  --hl-cottage-roof: #574361;
+  --hl-cottage-door: #46394e;
+  --hl-window: #f6dfa5;
+  --hl-cottage-path: #766477;
+}
+
+html { background:var(--hl-canvas); }
+body { color:var(--hl-text-primary); background:var(--hl-canvas); }
+h1,h2,h3 { color:var(--hl-text-primary); font-family:'Trebuchet MS','Segoe UI',system-ui,sans-serif; letter-spacing:-.02em; font-weight:700; }
+h1 em { color:var(--hl-text-secondary); font-style:normal; }
+p { color:inherit; }
+a { color:inherit; }
+button:focus-visible, input:focus-visible, a:focus-visible,
+select:focus-visible, .button:focus-visible {
+  outline:3px solid var(--hl-focus);
+  outline-offset:3px;
+}
+button:disabled { opacity:.65; }
+:root[data-ui-theme="night"] { color-scheme:dark; }
+:root[data-ui-theme="day"] { color-scheme:light; }
+
+.sidebar {
+  background:var(--hl-side);
+  border-color:var(--hl-divider);
+}
+.brand-mark {
+  color:var(--hl-text-secondary);
+  background:var(--hl-soft);
+  border-color:var(--hl-outline);
+  box-shadow:0 4px 0 var(--hl-shadow);
+}
+.brand strong { color:var(--hl-text-primary); }
+.brand small { color:var(--hl-text-secondary); }
+.sidebar-intro, .sidebar-foot { border-color:var(--hl-divider); }
+.sidebar-intro .tiny-sun, .sidebar-foot span { color:var(--hl-text-secondary); }
+.sidebar-intro p, .sidebar-foot { color:var(--hl-text-secondary); }
+.nav-link { color:var(--hl-text-secondary); }
+.nav-link:hover { background:var(--hl-soft); color:var(--hl-text-primary); }
+.nav-link.current {
+  background:var(--hl-selection-bg);
+  color:var(--hl-selection-fg);
+  box-shadow:0 3px 10px var(--hl-shadow);
+}
+.topbar {
+  background:var(--hl-surface);
+  border-color:var(--hl-divider);
+}
+.topbar-greeting, .topbar-greeting span { color:var(--hl-text-secondary); }
+.resource {
+  background:var(--hl-warm);
+  color:var(--hl-text-primary);
+  border-color:var(--hl-divider);
+  box-shadow:0 2px 9px var(--hl-shadow);
+}
+.resource-label { color:var(--hl-text-secondary); }
+.main-column { background:var(--hl-canvas); }
+.eyebrow, .page-heading p, .muted { color:var(--hl-text-secondary); }
+.page-heading p { font-size:14px; }
+
+.scene-card,.friend-card,.battery-card,.activity-card,.panel,.route-card,.market-item,.market-disclaimer {
+  background:var(--hl-surface);
+  border-color:var(--hl-divider);
+  border-radius:var(--hl-radius-card);
+  box-shadow:0 9px 30px var(--hl-shadow);
+}
+.scene-top {
+  background:var(--hl-surface-raised);
+  color:var(--hl-text-secondary);
+  gap:12px;
+}
+.scene-weather { color:var(--hl-text-primary); }
+.scene-caption { background:var(--hl-surface); }
+.scene-caption strong { color:var(--hl-text-primary); font-family:'Trebuchet MS','Segoe UI',system-ui,sans-serif; }
+.scene-caption p { color:var(--hl-text-secondary); font-size:12px; }
+.friend-card h2 span,.preview-card h2 span,.upgrade-panel h2 span { color:var(--hl-text-secondary); }
+.friend-card p,.preview-card p { color:var(--hl-text-secondary); font-family:inherit; }
+.text-link,.back-link { color:var(--hl-text-secondary); }
+.text-link:hover { text-decoration:underline; }
+
+.button {
+  border-radius:var(--hl-radius-button);
+  min-height:44px;
+  font-size:13px;
+  /* Keep background and text synchronized on theme changes; no low-contrast tween. */
+  transition:transform .18s ease-out,box-shadow .18s ease-out;
+}
+.button.primary, .button.primary:not(:disabled):hover {
+  background:var(--hl-action-bg);
+  color:var(--hl-action-fg);
+  box-shadow:0 3px 0 var(--hl-shadow);
+}
+.button.primary:not(:disabled):hover { filter:brightness(1.06); }
+.button.secondary {
+  background:var(--hl-secondary-bg);
+  color:var(--hl-secondary-fg);
+  border:1px solid var(--hl-outline);
+}
+.button.secondary:not(:disabled):hover { background:var(--hl-soft); color:var(--hl-text-primary); }
+.mini-heading,.battery-row strong { color:var(--hl-text-primary); }
+.demo-pill { color:var(--hl-text-primary); background:var(--hl-soft); }
+.battery-shell { border-color:var(--hl-outline); background:var(--hl-surface-raised); }
+.battery-shell::after { background:var(--hl-outline); }
+.battery-fill { background:var(--hl-accent); }
+.battery-slider { accent-color:var(--hl-action-bg); }
+.battery-note { color:var(--hl-text-secondary); font-size:12px; }
+.activity-icon { background:var(--hl-soft); }
+.activity-card h3 { font-family:inherit; }
+.activity-card p,.basket-panel p,.upgrade-panel p,
+.route-card p,.encounter-panel p,.market-item p { color:var(--hl-text-secondary); }
+.basket-art,.encounter-illustration { background:var(--hl-illustration-surface); }
+.big-number,.upgrade-detail strong,.reward-message { color:var(--hl-text-primary) !important; }
+.progress-track { background:var(--hl-surface-raised); }
+.progress-track > div { background:var(--hl-accent); }
+.level-dots span { background:var(--hl-soft); color:var(--hl-text-secondary); }
+.level-dots span.lit { background:var(--hl-selection-bg); color:var(--hl-selection-fg); }
+.upgrade-detail { border-color:var(--hl-divider); }
+.upgrade-detail span { color:var(--hl-text-secondary); }
+.notice {
+  background:var(--hl-selection-bg);
+  color:var(--hl-selection-fg);
+  border-color:var(--hl-outline);
+}
+.route-illustration { background:linear-gradient(135deg,var(--hl-scene-flora),var(--hl-scene-petal)); }
+.route-card:nth-child(2) .route-illustration { background:linear-gradient(135deg,var(--hl-scene-cool),var(--hl-scene-flora)); }
+.route-card:nth-child(3) .route-illustration { background:linear-gradient(135deg,var(--hl-scene-petal),var(--hl-scene-cool)); }
+.route-footer span { color:var(--hl-text-secondary); }
+.step-markers span { background:var(--hl-surface-raised); }
+.step-markers span.lit { background:var(--hl-accent); }
+.choice {
+  background:var(--hl-surface-raised);
+  color:var(--hl-text-primary);
+  border-color:var(--hl-outline);
+  min-height:76px;
+}
+.choice:hover { background:var(--hl-soft); color:var(--hl-text-primary); }
+.preview-orbit {
+  background:radial-gradient(circle,var(--hl-illustration-tint),var(--hl-illustration-surface) 72%);
+}
+.field-title { color:var(--hl-text-primary); }
+.name-row input {
+  background:var(--hl-surface-raised);
+  border-color:var(--hl-outline);
+  color:var(--hl-text-primary);
+  border-radius:var(--hl-radius-input);
+}
+.swatch { border-color:var(--hl-surface); box-shadow:0 0 0 2px var(--hl-outline); }
+.swatch.selected { box-shadow:0 0 0 3px var(--hl-focus),0 0 0 6px var(--hl-surface); }
+.option { background:var(--hl-surface-raised); color:var(--hl-text-primary); border-color:var(--hl-outline); }
+.option span { font-size:12px; }
+.option.selected { background:var(--hl-selection-bg); color:var(--hl-selection-fg); border:2px solid var(--hl-focus); }
+.market-art { background:var(--hl-illustration-surface); }
+.market-item h3 { color:var(--hl-text-primary); }
+.market-disclaimer { background:var(--hl-surface-raised); color:var(--hl-text-secondary); }
+.market-disclaimer span { color:var(--hl-text-secondary); }
+
+/* The interface palette and the valley lighting are independent. The percentages
+ * are driven by the pure solar model; the CSS paints continuous gradients. */
+.hollow-scene {
+  background:linear-gradient(
+    180deg,
+    color-mix(in srgb,#211b3a,#b9c9f1 var(--scene-daylight, 100%)) 0%,
+    color-mix(in srgb,#49375e,#e7d8f4 var(--scene-daylight, 100%)) 55%,
+    color-mix(in srgb,#66506e,#f1dfeb var(--scene-daylight, 100%)) 100%
+  );
+}
+.hollow-scene::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:5;
+  pointer-events:none;
+  background:radial-gradient(ellipse at 50% 36%,transparent 30%,#19132a40 100%);
+  opacity:var(--scene-starlight,0);
+}
+.scene-stars {
+  position:absolute;
+  inset:0;
+  opacity:var(--scene-starlight,0);
+  background-image:
+    radial-gradient(circle,#f6dfa5 0 1px,transparent 2px),
+    radial-gradient(circle,#d8c7ff 0 1px,transparent 2px),
+    radial-gradient(circle,#f3ecff 0 .8px,transparent 1.8px);
+  background-size:79px 83px,121px 97px,63px 115px;
+  background-position:10px 12px,35px 42px,49px 70px;
+  pointer-events:none;
+}
+.scene-sun { opacity:calc(1 - var(--scene-starlight,0)); color:#f6dfa5; text-shadow:0 0 32px #f6dfa5; }
+.scene-cloud { background:var(--hl-scene-cool); opacity:calc(.14 + .43 * (1 - var(--scene-starlight,0))); }
+.far-hill { background:color-mix(in srgb,#354258,var(--hl-garden) var(--scene-daylight,100%)); }
+.near-hill { background:color-mix(in srgb,#263950,var(--hl-garden-dark) var(--scene-daylight,100%)); }
+.cottage { filter:drop-shadow(8px 10px 4px #29203966); }
+.house {
+  border-color:var(--hl-cottage-door);
+  background:repeating-linear-gradient(
+    0deg,
+    var(--hl-cottage-wall),var(--hl-cottage-wall) 16px,
+    color-mix(in srgb,var(--hl-cottage-wall),#1b182a 10%) 17px,
+    color-mix(in srgb,var(--hl-cottage-wall),#1b182a 10%) 20px
+  );
+}
+.roof { background:var(--hl-cottage-roof); }
+.roof::after { background:color-mix(in srgb,var(--hl-cottage-roof),#fcf8ff 25%); }
+.chimney { background:var(--hl-cottage-roof); }
+.house-door { background:var(--hl-cottage-door); border-color:var(--hl-cottage-roof); }
+.house-window {
+  background:var(--hl-window);
+  border-color:var(--hl-cottage-roof);
+  color:#6f548f;
+  box-shadow:0 0 28px rgba(246,223,165,var(--scene-lanterns,.25));
+}
+.scene-path { background:var(--hl-cottage-path); }
+.scene-flowers { color:var(--hl-scene-petal); }
+.scene-companion { z-index:6; }
+.scene-companion::before {
+  content:'';
+  position:absolute;
+  inset:25% 16% 20%;
+  border-radius:50%;
+  pointer-events:none;
+  background:radial-gradient(circle,#f6dfa5b3,transparent 70%);
+  filter:blur(12px);
+  opacity:var(--scene-starlight,0);
+}
+.scene-companion .lumenette {
+  position:relative;
+  filter:drop-shadow(0 7px 5px #241f374d)
+         drop-shadow(0 0 12px rgba(216,199,255,var(--scene-starlight,0)));
+}
+.scene-decor { background:color-mix(in srgb,var(--hl-surface),transparent 22%); }
+
+/* Appearance controls stay available on every route without touching saved progress. */
+.appearance-toolbar {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:12px 18px;
+  padding:12px clamp(16px,4.1vw,68px);
+  background:var(--hl-side);
+  border-bottom:1px solid var(--hl-divider);
+}
+.appearance-heading {
+  margin-right:auto;
+  font-size:12px;
+  font-weight:800;
+  color:var(--hl-text-secondary);
+}
+.appearance-field { display:flex; gap:8px; align-items:center; min-width:0; }
+.appearance-field > span {
+  white-space:nowrap;
+  color:var(--hl-text-secondary);
+  font-size:12px;
+  font-weight:700;
+}
+.appearance-field select {
+  color:var(--hl-text-primary);
+  background:var(--hl-surface);
+  border:1px solid var(--hl-outline);
+  border-radius:var(--hl-radius-input);
+  padding:9px 28px 9px 11px;
+  min-height:44px;
+  max-width:176px;
+  font-size:13px;
+  font-weight:700;
+}
+.appearance-phase { color:var(--hl-text-secondary); font-size:12px; font-style:italic; white-space:nowrap; }
+.time-preview {
+  background:var(--hl-surface-raised);
+  padding:17px 24px 15px;
+  border-bottom:1px solid var(--hl-divider);
+}
+.time-preview-copy, .time-preview-footer { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.time-preview-copy strong { display:block; font-size:14px; color:var(--hl-text-primary); }
+.time-preview-copy span { display:block; color:var(--hl-text-secondary); font-size:12px; margin-top:4px; }
+.time-preview-copy output {
+  color:var(--hl-text-primary);
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.time-preview input[type="range"] {
+  display:block;
+  margin:14px 0 9px;
+  width:100%;
+  accent-color:var(--hl-action-bg);
+  min-height:24px;
+}
+.time-preview input:disabled { opacity:.5; }
+.time-preview-footer { color:var(--hl-text-secondary); font-size:11px; flex-wrap:wrap; }
+.time-preview-footer .preview-reset { font-size:11px; min-height:40px; padding:8px 12px; margin-left:auto; }
+.time-disclaimer { color:var(--hl-text-secondary); font-size:11px; line-height:1.5; margin:9px 0 0; }
+.scene-card { min-width:0; }
+:root[data-ui-theme="night"] .hollow-scene { --hl-cottage-path:#53475d; }
+
+/* Fixed nav remains clearly readable in both themes. */
+.bottom-nav { background:var(--hl-side); border-color:var(--hl-divider); }
+.bottom-link { color:var(--hl-text-secondary); min-height:50px; }
+.bottom-link.current { color:var(--hl-selection-fg); background:var(--hl-selection-bg); }
+@media (max-width:1100px) {
+  .appearance-heading { display:none; }
+  .appearance-phase { margin-left:auto; }
+}
+@media (max-width:660px) {
+  .appearance-toolbar { gap:8px 12px; padding:10px 16px; }
+  .appearance-field { flex:1 1 135px; display:grid; gap:4px; }
+  .appearance-field select { width:100%; max-width:none; }
+  .appearance-phase { flex-basis:100%; text-align:right; }
+  .time-preview { padding:14px; }
+  .time-preview-footer { gap:8px; }
+}
+@media (max-width:405px) {
+  .appearance-toolbar { gap:8px; }
+  .appearance-field > span { font-size:11px; }
+  .appearance-field select { padding-left:8px; padding-right:18px; font-size:12px; }
+  .time-preview-footer { justify-content:flex-start; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .scene-companion { animation:none !important; }
+  .scene-sun,.scene-stars,.house-window { transition:none !important; }
+}

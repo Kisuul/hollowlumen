@@ -4,6 +4,7 @@ import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 import assert from 'node:assert/strict';
+import { mkdirSync } from 'node:fs';
 const host='http://127.0.0.1:4173';
 const server=spawn(process.execPath,['node_modules/vite/bin/vite.js','preview','--host','127.0.0.1','--port','4173','--strictPort'],{stdio:'pipe'});
 let browser;const errors=[];
@@ -42,6 +43,74 @@ try{
   assert.notEqual(before,after,'Gate did not toggle');
   await page.reload({waitUntil:'networkidle'});
   assert.equal(await page.getByRole('button',{name:/^(Open|Close) gate/}).innerText(),after,'Gate did not persist across reload');
+  // Stage 2: theme and world lighting are independent, and appearance settings
+  // must never overwrite the Stage 1 economy/local-save key.
+  const gameSaveBefore = await page.evaluate(() => localStorage.getItem('lumenette-hollow-save'));
+  const interfacePicker = page.getByRole('combobox',{name:'Interface appearance'});
+  const lightingPicker = page.getByRole('combobox',{name:'Valley lighting'});
+  await interfacePicker.selectOption('dark');
+  assert.equal(await page.locator('html').getAttribute('data-ui-theme'),'night');
+  assert.equal(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(27, 24, 42)');
+  await lightingPicker.selectOption('always-day');
+  assert.equal(await page.locator('.scene-weather').innerText().then(t=>t.includes('Gentle daylight')),true);
+  assert.equal(await page.locator('html').getAttribute('data-ui-theme'),'night','Dark UI must coexist with daylight scene');
+  await interfacePicker.selectOption('follow-world');
+  assert.equal(await page.locator('html').getAttribute('data-ui-theme'),'day');
+  await lightingPicker.selectOption('always-night');
+  assert.equal(await page.locator('html').getAttribute('data-ui-theme'),'night');
+  await interfacePicker.selectOption('light');
+  assert.equal(await page.locator('html').getAttribute('data-ui-theme'),'day','Light UI must coexist with night scene');
+  await lightingPicker.selectOption('follow-device-time');
+  await interfacePicker.selectOption('follow-world');
+  const slider=page.getByRole('slider',{name:'Preview valley time of day'});
+  await slider.fill('12');
+  assert.equal(await page.locator('.time-preview output').innerText(),'12:00');
+  const noonLighting=await page.locator('.hollow-scene').evaluate(el=>el.style.getPropertyValue('--scene-daylight'));
+  assert.ok(noonLighting.endsWith('%'));
+  assert.equal(await page.locator('html').getAttribute('data-ui-theme'),'day');
+  await slider.evaluate(el=>el.blur()); // Keep the screenshot separate from the keyboard focus audit.
+  if(viewport.width !== 320){
+    mkdirSync('artifacts/visual',{recursive:true});
+    await page.screenshot({path:'artifacts/visual/hollow-day-'+viewport.width+'.png',fullPage:true});
+  }
+  await slider.fill('0');
+  assert.equal(await page.locator('.time-preview output').innerText(),'00:00');
+  const nightLighting=await page.locator('.hollow-scene').evaluate(el=>el.style.getPropertyValue('--scene-daylight'));
+  assert.notEqual(noonLighting,nightLighting,'Solar preview must change actual scene lighting variables');
+  assert.equal(await page.locator('html').getAttribute('data-ui-theme'),'night');
+  await slider.evaluate(el=>el.blur());
+  const nightButton = await page.getByRole('button',{name:/^(Open|Close) gate/}).evaluate(el=>{
+    const style=getComputedStyle(el);
+    return { background:style.backgroundColor, color:style.color,
+      tokenBackground:getComputedStyle(document.documentElement).getPropertyValue('--hl-secondary-bg').trim() };
+  });
+  const luminance = (css) => {
+    const channels = css.match(/\d+(?:\.\d+)?/g)?.slice(0,3).map(Number);
+    assert.equal(channels?.length,3,'Expected an RGB color: '+css);
+    const [r,g,b]=channels.map(channel=>{
+      const value=channel/255;
+      return value<=.04045?value/12.92:((value+.055)/1.055)**2.4;
+    });
+    return .2126*r+.7152*g+.0722*b;
+  };
+  const light=luminance(nightButton.color),dark=luminance(nightButton.background);
+  const contrast=(Math.max(light,dark)+.05)/(Math.min(light,dark)+.05);
+  assert.ok(contrast>=4.5,'Night secondary button has insufficient text contrast: '+contrast.toFixed(2)+':1');
+  console.log('Secondary button/night '+viewport.width+'px: '+JSON.stringify({...nightButton,contrast:contrast.toFixed(2)}));
+  if(viewport.width !== 320)await page.screenshot({path:'artifacts/visual/hollow-night-'+viewport.width+'.png',fullPage:true});
+  await page.getByRole('button',{name:'Return to live'}).click();
+  assert.equal(await page.locator('.time-preview output').innerText(),'Live clock');
+  assert.equal(await page.evaluate(() => localStorage.getItem('lumenette-hollow-save')),gameSaveBefore);
+  await interfacePicker.selectOption('dark');
+  await page.reload({waitUntil:'networkidle'});
+  assert.equal(await page.locator('html').getAttribute('data-ui-theme'),'night','Appearance preference must persist across reload');
+  for(const label of ['Wander','Idle','Yarn','Shop','Home']){
+    await nav.getByRole('link',{name:label}).click();
+    const bg=await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor);
+    assert.equal(bg,'rgb(27, 24, 42)','Dark palette missing on '+label);
+    assert.equal(await page.locator('body').evaluate(el=>el.scrollWidth>window.innerWidth+2),false,'Dark overflow on '+label);
+  }
+  console.log('PASS '+viewport.width+'px: palette switching, 24-hour preview, persistence, 5 dark routes');
   console.log('PASS '+viewport.width+'px: 5 routes, navigation, game state persistence, layout');
   await page.close();
  }

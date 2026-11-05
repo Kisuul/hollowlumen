@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, Outlet } from '@tanstack/react-router';
 import { Lumenette } from './components/Lumenette.jsx';
+import { useAppearance } from './theme/AppearanceProvider.jsx';
+import { sceneLabel, displayHour } from './theme/presentation.js';
 import {
   batteryMultiplier, COLORS, DECOR, idleEarnings, MAX_LEVEL,
   OFFLINE_CAP_MS, perMinute, ROUTES, upgradeCost,
@@ -33,8 +35,64 @@ function Resource({ compact = false }) {
   return <span className={`resource ${compact ? 'resource-small' : ''}`} aria-label={`${yarn} yarn`}><span aria-hidden="true">🧶</span> {yarn.toLocaleString()} <span className="resource-label">yarn</span></span>;
 }
 
+
+function AppearanceControls() {
+  const { appearance, updateAppearance, scene } = useAppearance();
+  return (
+    <section className="appearance-toolbar" aria-label="Valley appearance settings">
+      <span className="appearance-heading" aria-hidden="true">✧ &nbsp; Make the hollow yours</span>
+      <label className="appearance-field">
+        <span>Interface</span>
+        <select aria-label="Interface appearance" value={appearance.uiMode} onChange={(event) => updateAppearance({ uiMode: event.target.value })}>
+          <option value="follow-world">Follow world</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+      <label className="appearance-field">
+        <span>Valley light</span>
+        <select aria-label="Valley lighting" value={appearance.sceneMode} onChange={(event) => updateAppearance({ sceneMode: event.target.value })}>
+          <option value="follow-device-time">Follow clock</option>
+          <option value="always-day">Always day</option>
+          <option value="always-night">Always night</option>
+        </select>
+      </label>
+      <span className="appearance-phase" role="status">{sceneLabel(scene)}</span>
+    </section>
+  );
+}
+
+function TimePreview() {
+  const { clock, previewHour, setPreviewHour, appearance, previewActive } = useAppearance();
+  const liveHour = clock.getHours() + clock.getMinutes() / 60;
+  const selectedHour = previewHour ?? liveHour;
+  const isEnabled = appearance.sceneMode === 'follow-device-time';
+  return (
+    <div className="time-preview">
+      <div className="time-preview-copy">
+        <div>
+          <strong>Explore the hours</strong>
+          <span>See the cottage change from sunrise to starlight.</span>
+        </div>
+        <output htmlFor="valley-time-preview" aria-live="off">{previewActive ? displayHour(previewHour) : 'Live clock'}</output>
+      </div>
+      <input id="valley-time-preview" type="range" min="0" max="23.75" step=".25"
+        value={selectedHour} disabled={!isEnabled} aria-label="Preview valley time of day"
+        onChange={(event) => setPreviewHour(Number(event.target.value))} />
+      <div className="time-preview-footer">
+        <span>☼ Dawn</span><span>☀ Noon</span><span>☾ Night</span>
+        <button type="button" className="button secondary preview-reset"
+          onClick={() => setPreviewHour(null)} disabled={!previewActive}>Return to live</button>
+      </div>
+      <p className="time-disclaimer">Fictional valley lighting · approximate seasons · no effect on yarn or cooldowns.</p>
+      {!isEnabled && <p className="time-disclaimer">Choose “Follow clock” above to explore the day.</p>}
+    </div>
+  );
+}
+
 export function Shell() {
   const name = useGame((state) => state.name);
+  const { scene } = useAppearance();
   return (
     <div className="app-frame">
       <aside className="sidebar">
@@ -42,7 +100,7 @@ export function Shell() {
           <span className="brand-mark">✿</span>
           <span><strong>Lumenette</strong><small>HOLLOW</small></span>
         </Link>
-        <div className="sidebar-intro"><span className="tiny-sun">☀</span><p>A little world to come home to.</p></div>
+        <div className="sidebar-intro"><span className="tiny-sun">{scene.isDark ? "☾" : "☀"}</span><p>A little world to come home to.</p></div>
         <nav className="nav" aria-label="Main navigation">
           {NAV.map((item) => <Link key={item.path} to={item.path} activeOptions={{ exact: true }} className="nav-link" activeProps={{ className: 'nav-link current' }}>
             <span className="nav-icon" aria-hidden="true">{item.icon}</span><span>{item.name}</span>
@@ -51,7 +109,8 @@ export function Shell() {
         <div className="sidebar-foot"><span>✧</span><p>Small moments. Soft magic.</p><small>Prototype v0.1 · saved on this device</small></div>
       </aside>
       <div className="main-column">
-        <div className="topbar"><div className="topbar-greeting">☼ &nbsp; Welcome back, friend <span>·</span> {name} is happy you're here.</div><Resource /></div>
+        <div className="topbar"><div className="topbar-greeting">{scene.isDark ? "☾" : "☼"} &nbsp; Welcome back, friend <span>·</span> {name} is happy you're here.</div><Resource /></div>
+        <AppearanceControls />
         <main id="main-content" className="main-content"><Outlet /></main>
         <nav className="bottom-nav" aria-label="Mobile navigation">
           {NAV.map((item) => <Link key={item.path} to={item.path} activeOptions={{ exact: true }} className="bottom-link" activeProps={{ className: 'bottom-link current' }}>
@@ -78,13 +137,20 @@ function BatteryWidget() {
 
 export function Home() {
   const game = useGame();
+  const { scene } = useAppearance();
+  const sceneVars = {
+    '--scene-daylight': `${Math.round(scene.ambient * 100)}%`,
+    '--scene-starlight': scene.stars,
+    '--scene-lanterns': scene.lanterns,
+  };
   const visitor = game.gateOpen ? 'The garden gate is open for imagined neighbors.' : 'A quiet morning in your own little hollow.';
   return <div className="content-wrap">
     <Heading kicker="CHAPTER ONE · THE HOLLOW" title={<>A softer kind of <em>adventure.</em></>} description="Make yourself at home. The valley is in no hurry, and neither are you." />
     <section className="home-grid" aria-label="Your cottage">
       <div className="scene-card">
-        <div className="scene-top"><span>✿ &nbsp; PIP'S COTTAGE</span><span className="scene-weather">☀ &nbsp; A lovely day</span></div>
-        <div className="hollow-scene">
+        <div className="scene-top"><span>✿ &nbsp; PIP'S COTTAGE</span><span className="scene-weather">{scene.isDark ? "☾" : "☀"} &nbsp; {sceneLabel(scene)}</span></div>
+        <div className="hollow-scene" style={sceneVars} data-scene-phase={scene.phase}>
+          <div className="scene-stars" aria-hidden="true" />
           <div className="scene-cloud cloud-one"/><div className="scene-cloud cloud-two"/>
           <span className="scene-sun" aria-hidden="true">✺</span>
           <div className="far-hill"/><div className="near-hill"/>
@@ -94,6 +160,7 @@ export function Home() {
           <div className="scene-companion"><Lumenette name={game.name} color={game.color} face={game.face} accessory={game.accessory}/></div>
           <div className="scene-decor" aria-label="Cottage decorations">{game.decor.filter((item) => item !== 'rug').map((item) => <span key={item} title={DECOR.find((decor) => decor.id === item)?.label}>{DECOR.find((decor) => decor.id === item)?.emoji}</span>)}</div>
         </div>
+        <TimePreview />
         <div className="scene-caption"><div><strong>{game.name}'s little corner</strong><p>{visitor}</p></div><button type="button" className="button secondary" onClick={game.toggleGate}>{game.gateOpen ? 'Close gate' : 'Open gate'} <span aria-hidden="true">↗</span></button></div>
       </div>
       <aside className="side-stack"><div className="friend-card"><span className="eyebrow">YOUR LITTLE FRIEND</span><div className="friend-portrait"><Lumenette name={game.name} color={game.color} face={game.face} accessory={game.accessory}/></div><h2>Meet {game.name} <span>✿</span></h2><p>A tiny heart made of yarn. Very good at keeping you company.</p><Link to="/yarn" className="text-link">Dress up {game.name} ↗</Link></div><BatteryWidget /></aside>
@@ -154,7 +221,7 @@ export function Yarn() {
   return <div className="content-wrap"><Heading kicker="MAKE THEM YOUR OWN" title={<>A friend made of <em>yarn.</em></>} description="Every stitch tells a little story. Give your companion a look that feels like home." />
     <div className="custom-grid"><section className="panel preview-card"><span className="eyebrow">YOUR COMPANION</span><div className="preview-orbit"><Lumenette name={game.name} color={game.color} face={game.face} accessory={game.accessory}/></div><h2>{game.name} <span>✿</span></h2><p>Your ever-present little yarn friend.</p></section>
     <section className="panel custom-controls"><div className="input-row"><label htmlFor="companion-name" className="field-title">Companion's name</label><div className="name-row"><input id="companion-name" type="text" maxLength="20" value={draftName} onChange={(event) => setDraftName(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') game.setName(draftName); }}/><button type="button" className="button secondary" onClick={() => game.setName(draftName)}>Save</button></div></div>
-    <fieldset><legend className="field-title">Pick a yarn color</legend><div className="swatches">{COLORS.map((color) => <button type="button" key={color.id} className={`swatch ${game.color === color.id ? 'selected' : ''}`} style={{ '--swatch': color.hex }} disabled={!game.ownedColors.includes(color.id)} aria-label={`${color.label}${!game.ownedColors.includes(color.id) ? ', locked' : ''}`} title={color.label} onClick={() => game.setColor(color.id)}><span aria-hidden="true">{game.ownedColors.includes(color.id) ? '✓' : '🔒'}</span></button>)}</div><Link to="/shop" className="text-link tiny">Find more colors in the shop ↗</Link></fieldset>
+    <fieldset><legend className="field-title">Pick a yarn color</legend><div className="swatches">{COLORS.map((color) => <button type="button" key={color.id} className={`swatch ${game.color === color.id ? 'selected' : ''}`} style={{ '--swatch': color.hex }} disabled={!game.ownedColors.includes(color.id)} aria-label={`${color.label}${!game.ownedColors.includes(color.id) ? ', locked' : ''}`} aria-pressed={game.color === color.id} title={color.label} onClick={() => game.setColor(color.id)}><span aria-hidden="true">{!game.ownedColors.includes(color.id) ? '🔒' : game.color === color.id ? '✓' : ''}</span></button>)}</div><Link to="/shop" className="text-link tiny">Find more colors in the shop ↗</Link></fieldset>
     <fieldset><legend className="field-title">Stitched expression</legend><div className="option-row">{['smile', 'sleepy', 'bright'].map((face) => <button key={face} type="button" onClick={() => game.setFace(face)} className={`option ${game.face === face ? 'selected' : ''}`} aria-pressed={game.face === face}>{face === 'smile' ? '☺' : face === 'sleepy' ? 'ᴗ' : '◕'} <span>{face}</span></button>)}</div></fieldset>
     <fieldset><legend className="field-title">Little accessories</legend><div className="option-row">{['scarf', 'bow', 'flower', 'none'].map((accessory) => <button key={accessory} type="button" onClick={() => game.setAccessory(accessory)} className={`option ${game.accessory === accessory ? 'selected' : ''}`} aria-pressed={game.accessory === accessory}>{accessory === 'scarf' ? '🧣' : accessory === 'bow' ? '🎀' : accessory === 'flower' ? '🌼' : '✧'} <span>{accessory}</span></button>)}</div></fieldset>
     </section></div>
