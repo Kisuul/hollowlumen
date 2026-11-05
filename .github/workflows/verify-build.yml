@@ -45,6 +45,14 @@ jobs:
       - name: Build production bundle
         run: npm run build
 
+      - name: Install isolated Playwright browser smoke dependency
+        run: |
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Exercise compiled site in Chromium
+        run: node tools/smoke-browser.mjs
+
       - name: Upload compiled site for browser smoke testing
         if: ${{ success() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # pinned v4
