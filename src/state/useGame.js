@@ -6,6 +6,25 @@ import {
   sanitizeSave, migratePersistedSave, upgradeIdle,
 } from './game.js';
 
+// Preserve saves written by a newer, incompatible app instead of overwriting
+// them after this older build fails to hydrate. Unknown versions are read-only.
+const jsonStorage = createJSONStorage(() => localStorage);
+const guardedStorage = {
+  ...jsonStorage,
+  setItem(key, value) {
+    let storedVersion = null;
+    try {
+      const previous = JSON.parse(localStorage.getItem(key) ?? 'null');
+      storedVersion = previous?.version;
+    } catch { /* Malformed input remains subject to the ordinary sanitizer. */ }
+    if (Number.isInteger(storedVersion) && storedVersion > 2) {
+      console.warn('A newer HollowLumen save is present; this build will not overwrite it.');
+      return;
+    }
+    return jsonStorage.setItem(key, value);
+  },
+};
+
 const initial = newGame();
 // Old single-Pip UI aliases remain runtime projections; they are not persisted.
 const aliases = new Set(['name', 'color', 'face', 'accessory']);
@@ -53,7 +72,7 @@ export const useGame = create(persist((set) => ({
     if (fromVersion === 1) backUpVersionOneSave();
     return migratePersistedSave(persisted, fromVersion, Date.now());
   },
-  storage: createJSONStorage(() => localStorage),
+  storage: guardedStorage,
   partialize: (state) => Object.fromEntries(fields.map((key) => [key, state[key]])),
   merge: (persisted, current) => ({ ...current, ...sanitizeSave(persisted, Date.now()) }),
 }));
