@@ -1,0 +1,56 @@
+/* GENERATED from docs/design/tokens/visual.tokens.json — do not edit by hand. */
+:root,
+:root[data-ui-theme="day"] {
+  --hl-canvas: #fcf8ff;
+  --hl-surface: #f9f1e7;
+  --hl-surface-raised: #f3ecf7;
+  --hl-text-primary: #4c3e57;
+  --hl-text-secondary: #6f548f;
+  --hl-action-bg: #6f548f;
+  --hl-action-fg: #ffffff;
+  --hl-secondary-bg: #d8c7ff;
+  --hl-secondary-fg: #3b2e44;
+  --hl-accent: #b79cff;
+  --hl-focus: #3b2e44;
+  --hl-outline: #6f548f;
+  --hl-separator: #b8a9bc;
+  --hl-selection-bg: #d8c7ff;
+  --hl-selection-fg: #3b2e44;
+  --hl-scene-warm: #f6dfc9;
+  --hl-scene-cool: #d7e7f6;
+  --hl-scene-flora: #d8e8d8;
+  --hl-scene-petal: #f7d6e8;
+  --hl-space-1: 4px;
+  --hl-space-2: 8px;
+  --hl-space-3: 12px;
+  --hl-space-4: 16px;
+  --hl-space-6: 24px;
+  --hl-space-8: 32px;
+  --hl-space-12: 48px;
+  --hl-radius-input: 12px;
+  --hl-radius-button: 16px;
+  --hl-radius-card: 22px;
+  --hl-radius-dialog: 26px;
+  --hl-radius-pill: 999px;
+}
+:root[data-ui-theme="night"] {
+  --hl-canvas: #1b182a;
+  --hl-surface: #241f37;
+  --hl-surface-raised: #30273f;
+  --hl-text-primary: #f3ecff;
+  --hl-text-secondary: #c8bdd9;
+  --hl-action-bg: #d8c7ff;
+  --hl-action-fg: #1b182a;
+  --hl-secondary-bg: #30273f;
+  --hl-secondary-fg: #f3ecff;
+  --hl-accent: #b79cff;
+  --hl-focus: #f6dfa5;
+  --hl-outline: #8276a1;
+  --hl-separator: #8276a1;
+  --hl-selection-bg: #30273f;
+  --hl-selection-fg: #d8c7ff;
+  --hl-scene-warm: #f6dfa5;
+  --hl-scene-cool: #a9c7e8;
+  --hl-scene-flora: #b8d5be;
+  --hl-scene-petal: #e9b6d7;
+}
