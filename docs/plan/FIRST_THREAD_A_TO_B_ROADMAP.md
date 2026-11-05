@@ -1,6 +1,7 @@
 # HollowLumen — A → B roadmap: The First Thread
 
 **Status:** PROPOSED DEVELOPMENT PLAN; not a gameplay specification or client-approved feature list.  
+**Checkpoint 1 reconciliation:** [Unified game direction (candidate)](CHECKPOINT_1_UNIFIED_GAME_DIRECTION.md) · [Decision/approval ledger](CHECKPOINT_1_DECISION_LEDGER.md). These documents do **not** constitute client approval of gameplay.  
 **Prepared:** 2026-11-05.  
 **Implementation base inspected:** `Kisuul/hollowlumen` `main` at `cb209918e3f6fe6793564e4cb011b76854b65a1d` (PRs #1–#6 merged).  
 **Parallel design research:** `cosmicdance-4-2-0/hollowlumen` branch `design/gameplay-loops-rpg-vision-2026-11-05` at `059d52c9acf5eb9330fb044af78605f069ad0503`.  
