@@ -21,17 +21,22 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Report environment and missing lockfile
+      - name: Report environment and validate tracked lockfile
         run: |
           node --version
           npm --version
-          test -f package-lock.json && echo "Lockfile found" || echo "::warning::No package-lock.json is committed; dependency resolution is not reproducible yet"
+          test -f package-lock.json || { echo "::error::Committed package-lock.json is required"; exit 1; }
+          node --input-type=module -e "import fs from 'node:fs'; import assert from 'node:assert/strict'; const p=JSON.parse(fs.readFileSync('package.json')); const l=JSON.parse(fs.readFileSync('package-lock.json')); assert.equal(l.lockfileVersion, 3); assert.deepEqual(l.packages[''].dependencies,p.dependencies); assert.deepEqual(l.packages[''].devDependencies,p.devDependencies);"
 
-      - name: Resolve dependencies to a candidate lockfile
-        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-
-      - name: Install from resolved lockfile
+      - name: Install exactly pinned dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Verify installation did not rewrite the lockfile
+        run: git diff --exit-code -- package-lock.json
+
+      - name: Audit runtime dependencies (record findings)
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Validate design tokens
         run: node tools/validate-design-tokens.mjs
@@ -69,7 +74,10 @@ jobs:
           path: dist/
           retention-days: 7
 
-      - name: Upload resolved lockfile for review
+      - name: Verify smoke dependencies did not rewrite lockfile
+        run: git diff --exit-code -- package-lock.json
+
+      - name: Upload pinned lockfile for traceability
         if: ${{ always() && hashFiles('package-lock.json') != '' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # pinned v4
         with:
