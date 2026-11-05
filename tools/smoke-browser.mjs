@@ -68,6 +68,7 @@ try{
   const noonLighting=await page.locator('.hollow-scene').evaluate(el=>el.style.getPropertyValue('--scene-daylight'));
   assert.ok(noonLighting.endsWith('%'));
   assert.equal(await page.locator('html').getAttribute('data-ui-theme'),'day');
+  await slider.evaluate(el=>el.blur()); // Keep the screenshot separate from the keyboard focus audit.
   if(viewport.width !== 320){
     mkdirSync('artifacts/visual',{recursive:true});
     await page.screenshot({path:'artifacts/visual/hollow-day-'+viewport.width+'.png',fullPage:true});
@@ -77,6 +78,13 @@ try{
   const nightLighting=await page.locator('.hollow-scene').evaluate(el=>el.style.getPropertyValue('--scene-daylight'));
   assert.notEqual(noonLighting,nightLighting,'Solar preview must change actual scene lighting variables');
   assert.equal(await page.locator('html').getAttribute('data-ui-theme'),'night');
+  await slider.evaluate(el=>el.blur());
+  const nightButton = await page.getByRole('button',{name:/^(Open|Close) gate/}).evaluate(el=>{
+    const style=getComputedStyle(el);
+    return { background:style.backgroundColor, color:style.color,
+      tokenBackground:getComputedStyle(document.documentElement).getPropertyValue('--hl-secondary-bg').trim() };
+  });
+  console.log('Secondary button/night '+viewport.width+'px: '+JSON.stringify(nightButton));
   if(viewport.width !== 320)await page.screenshot({path:'artifacts/visual/hollow-night-'+viewport.width+'.png',fullPage:true});
   await page.getByRole('button',{name:'Return to live'}).click();
   assert.equal(await page.locator('.time-preview output').innerText(),'Live clock');
