@@ -6,6 +6,8 @@ A cozy rural fantasy life sim where you raise living yarn creatures, decorate yo
 **Platforms:** Mobile + PC (web)  
 **Modes:** Solo, with optional co-op / friend visits
 
+**Proposed next milestone:** [A → B roadmap: The First Thread](docs/plan/FIRST_THREAD_A_TO_B_ROADMAP.md). This is a reviewable gameplay-evolution plan, **not** an approved replacement for the current playable prototype or evidence that the proposed RPG systems are implemented.
+
 ---
 
 ## The idea
