@@ -1,0 +1,54 @@
+name: Verify HollowLumen build
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Install, test, and build (Node 22)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # pinned v4
+
+      - name: Install Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # pinned v4
+        with:
+          node-version: '22'
+
+      - name: Report environment and missing lockfile
+        run: |
+          node --version
+          npm --version
+          test -f package-lock.json && echo "Lockfile found" || echo "::warning::No package-lock.json is committed; dependency resolution is not reproducible yet"
+
+      - name: Resolve dependencies to a candidate lockfile
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+
+      - name: Install from resolved lockfile
+        run: npm ci --no-audit --no-fund
+
+      - name: Validate design tokens
+        run: node tools/validate-design-tokens.mjs
+
+      - name: Verify generated CSS
+        run: node tools/build-theme-css.mjs --check
+
+      - name: Run all unit tests
+        run: npm test
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Upload resolved lockfile for review
+        if: ${{ always() && hashFiles('package-lock.json') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # pinned v4
+        with:
+          name: candidate-package-lock
+          path: package-lock.json
+          retention-days: 7
