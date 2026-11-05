@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "state": {
+    "saveVersion": 1,
+    "name": "   ",
+    "color": "not-owned",
+    "face": "not-a-face",
+    "accessory": "not-an-accessory",
+    "yarn": -100,
+    "level": 100,
+    "lastClaimMs": 9999999999999,
+    "nextUpgradeMs": -50,
+    "ownedColors": [
+      "rose",
+      "rose",
+      "unknown"
+    ],
+    "decor": [
+      "lamp",
+      "lamp",
+      "not-a-item"
+    ],
+    "battery": 999,
+    "gateOpen": "true",
+    "wanderCount": -3,
+    "visitCount": 1.5
+  }
+}
