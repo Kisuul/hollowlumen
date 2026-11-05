@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "state": {
+    "saveVersion": 1,
+    "name": "Pip the First",
+    "color": "lavender",
+    "face": "bright",
+    "accessory": "flower",
+    "yarn": 157,
+    "level": 3,
+    "lastClaimMs": 1730000000000,
+    "nextUpgradeMs": 0,
+    "ownedColors": [
+      "rose",
+      "lavender"
+    ],
+    "decor": [
+      "rug",
+      "lamp"
+    ],
+    "battery": 73,
+    "gateOpen": true,
+    "wanderCount": 5,
+    "visitCount": 2
+  }
+}
